@@ -1,0 +1,3345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>杰同学的小窝🐾</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        :root {
+            --neon-cyan: #00ffff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff88;
+            --deep-space: #050510;
+            --space-gray: #0a0a16;
+            --starlight: #e0e0ff;
+            --nebula-purple: #4a0e4a;
+            --matrix-green: #00ff41;
+            --danger-red: #ff0055;
+            --warning-yellow: #ffaa00;
+        }
+        
+        body {
+            font-family: 'Orbitron', 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: var(--deep-space);
+            color: var(--starlight);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            font-size: 14px;
+        }
+        
+        /* 全息网格背景 */
+        .holographic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 40% 80%, rgba(0, 255, 136, 0.08) 0%, transparent 20%);
+            z-index: -1;
+        }
+        
+        .grid-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+            opacity: 0.3;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(30px) translateY(30px); }
+        }
+        
+        /* 实时时钟 */
+        #real-time-clock {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--neon-cyan);
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            z-index: 1002;
+        }
+        
+        /* 页面容器 */
+        .page {
+            width: 100%;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page.active {
+            display: flex;
+        }
+        
+        /* 霓虹导航栏 - 手机版优化 */
+        .neon-navbar {
+            background: rgba(10, 10, 30, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--neon-cyan);
+            box-shadow: 0 5px 30px rgba(0, 255, 255, 0.2);
+            padding: 12px 15px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            min-height: 50px;
+        }
+        
+        /* 导航栏标题 - 修复版 */
+        .neon-navbar-title {
+            flex: 1;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding: 0 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            max-width: calc(100% - 200px);
+        }
+        
+        /* 为长标题添加滚动效果 */
+        .neon-navbar-title.scrolling-title {
+            animation: scrollTitle 10s linear infinite;
+            padding-right: 20px;
+        }
+        
+        @keyframes scrollTitle {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .neon-navbar::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--neon-cyan), 
+                var(--neon-pink), 
+                var(--neon-cyan), 
+                transparent);
+            animation: scanline 3s linear infinite;
+        }
+        
+        /* 场景切换按钮 - 固定在左上角 */
+        .hologram-btn {
+            position: absolute;
+            left: 15px;
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 255, 0.15), 
+                rgba(255, 0, 255, 0.15));
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 3px 10px rgba(0, 255, 255, 0.3);
+            text-shadow: 0 0 3px currentColor;
+            white-space: nowrap;
+        }
+        
+        .hologram-btn:hover {
+            transform: translateY(-1px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        
+        /* 登录页面布局 - 单页面设计 */
+        .login-portal {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(20, 20, 40, 0.9);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--neon-cyan), 
+                var(--neon-pink), 
+                var(--neon-cyan));
+            animation: portalGlow 3s ease-in-out infinite alternate;
+        }
+        
+        /* 功能选择页面 */
+        .feature-selection-page {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+        
+        .feature-selection-page.active {
+            display: flex;
+        }
+        
+        /* 登录表单 */
+        .cyber-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(30, 30, 60, 0.7);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            color: var(--starlight);
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .cyber-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            background: rgba(30, 30, 60, 0.9);
+        }
+        
+        .cyber-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, 
+                var(--neon-cyan), 
+                var(--neon-pink));
+            border: none;
+            border-radius: 8px;
+            color: var(--deep-space);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+        
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            transition: 0.5s;
+        }
+        
+        .cyber-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.4);
+        }
+        
+        .cyber-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* 功能卡片 - 手机版网格 */
+        .hologram-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .hologram-card {
+            background: rgba(25, 25, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+        
+        .hologram-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                var(--neon-cyan), 
+                var(--neon-pink));
+        }
+        
+        .hologram-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+            border-color: var(--neon-cyan);
+        }
+        
+        .hologram-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px currentColor;
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+        
+        .hologram-text {
+            font-size: 14px;
+            color: var(--starlight);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 3px currentColor;
+        }
+        
+        /* 聊天容器 */
+        .cyber-chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .cyber-chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(10, 10, 25, 0.5);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 消息气泡 */
+        .cyber-message {
+            max-width: 85%;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: messageAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .cyber-message.left {
+            align-self: flex-start;
+        }
+        .cyber-message.right {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        /* 头像 - 可点击查看资料 */
+        .cyber-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-cyan);
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .cyber-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+        
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 15px;
+            word-break: break-word;
+            font-size: 14px;
+            max-width: calc(100% - 46px);
+            position: relative;
+            backdrop-filter: blur(5px);
+            line-height: 1.3;
+        }
+        
+        .cyber-message.left .message-bubble {
+            background: rgba(30, 30, 60, 0.9);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-top-left-radius: 5px;
+        }
+        
+        .cyber-message.right .message-bubble {
+            background: linear-gradient(135deg, #00aaff, #0088ff);
+            color: white;
+            border-top-right-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 170, 255, 0.3);
+        }
+        
+        /* 用户名显示 - 修复版：完整显示 */
+        .username-display {
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: visible;
+            max-width: 100%;
+            display: inline-block;
+            position: relative;
+        }
+        
+        /* 为超长用户名添加工具提示 */
+        .username-display[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 30, 0.9);
+            color: var(--neon-cyan);
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--neon-cyan);
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+        
+        .cyber-message.left .username-display {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px var(--neon-cyan);
+        }
+        
+        .cyber-message.right .username-display {
+            color: white;
+            text-shadow: 0 0 5px white;
+        }
+        
+        /* 消息中的视频样式 */
+        .message-video {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 5px;
+            background: #000;
+        }
+        
+        /* 视频上传指示器 */
+        .video-uploading {
+            padding: 10px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            color: var(--neon-cyan);
+            font-size: 12px;
+        }
+        
+        /* 消息状态 */
+        .message-status {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 3px;
+        }
+        
+        .message-status.read {
+            color: var(--neon-green);
+        }
+        
+        /* 消息撤回提示 */
+        .message-withdrawn {
+            opacity: 0.6;
+            font-style: italic;
+            color: #888;
+        }
+        
+        .withdrawn-notice {
+            font-size: 11px;
+            color: var(--warning-yellow);
+            margin-top: 2px;
+        }
+        
+        /* 输入区域 */
+        .cyber-input-area {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(20, 20, 40, 0.9);
+            backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .cyber-message-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: rgba(30, 30, 60, 0.7);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            color: var(--starlight);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            min-height: 40px;
+        }
+        
+        .cyber-message-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+        
+        /* 工具按钮容器 - 适应移动端 */
+        .tool-buttons-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        /* 移动端工具按钮下拉菜单 */
+        .mobile-tools-dropdown {
+            position: relative;
+        }
+        
+        .mobile-tools-menu {
+            position: absolute;
+            bottom: 45px;
+            right: 0;
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 100;
+            min-width: 120px;
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        .mobile-tool-btn {
+            padding: 8px 12px;
+            background: rgba(30, 30, 60, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 6px;
+            color: var(--starlight);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .mobile-tool-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--neon-cyan);
+        }
+        
+        .cyber-tool-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-cyan);
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cyber-tool-btn:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+            background: rgba(0, 255, 255, 0.2);
+        }
+        
+        .cyber-send-btn {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+            color: var(--deep-space);
+            font-weight: 700;
+        }
+        
+        /* 表情面板 */
+        .hologram-emoji-panel {
+            position: absolute;
+            bottom: 70px;
+            left: 15px;
+            right: 15px;
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 15px;
+            padding: 15px;
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .hologram-emoji {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .hologram-emoji:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: scale(1.2) rotate(5deg);
+            box-shadow: 0 3px 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* 列表页面 */
+        .cyber-list-page {
+            padding: 15px;
+            overflow-y: auto;
+            background: rgba(15, 15, 30, 0.6);
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .cyber-friend-list, .cyber-group-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .cyber-friend-item, .cyber-group-item {
+            background: rgba(30, 30, 60, 0.7);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cyber-friend-item:hover, .cyber-group-item:hover {
+            transform: translateX(3px) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
+            border-color: var(--neon-cyan);
+        }
+        
+        /* 好友请求项目 */
+        .friend-request-item {
+            background: rgba(30, 30, 60, 0.7);
+            border: 2px solid rgba(255, 170, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        .accept-btn, .reject-btn {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .accept-btn {
+            background: var(--neon-green);
+            color: var(--deep-space);
+        }
+        
+        .reject-btn {
+            background: var(--danger-red);
+            color: white;
+        }
+        
+        /* 模态窗口 */
+        .hologram-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 20, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .hologram-modal-content {
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* 用户资料模态 */
+        .user-profile-modal .hologram-modal-content {
+            max-width: 350px;
+        }
+        
+        .user-profile-info {
+            text-align: center;
+            padding: 15px 0;
+        }
+        
+        .user-profile-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-cyan);
+            margin-bottom: 10px;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+        
+        .user-profile-info h3 {
+            color: var(--neon-cyan);
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        
+        .user-profile-info p {
+            color: var(--starlight);
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        
+        /* 创建群聊模态 */
+        .create-group-modal .hologram-modal-content {
+            max-width: 350px;
+        }
+        
+        .create-group-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .friend-select-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            background: rgba(30, 30, 60, 0.5);
+        }
+        
+        .friend-select-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .friend-select-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+        
+        .friend-select-item.selected {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid var(--neon-cyan);
+        }
+        
+        /* 长按消息菜单 */
+        .message-context-menu {
+            position: absolute;
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            padding: 8px;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+            display: none;
+            flex-direction: column;
+            min-width: 120px;
+        }
+        
+        .menu-item {
+            padding: 8px 12px;
+            color: var(--starlight);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 13px;
+        }
+        
+        .menu-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--neon-cyan);
+        }
+        
+        /* 消息已读状态指示器 */
+        .read-status {
+            font-size: 10px;
+            color: var(--neon-green);
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .hologram-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .hologram-card {
+                padding: 15px 10px;
+                min-height: 90px;
+            }
+            
+            .hologram-icon {
+                font-size: 28px;
+            }
+            
+            .hologram-text {
+                font-size: 12px;
+            }
+            
+            .neon-navbar {
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+            
+            .neon-navbar-title {
+                max-width: calc(100% - 150px);
+                font-size: 16px;
+            }
+            
+            .hologram-btn {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+            
+            #real-time-clock {
+                font-size: 11px;
+                padding: 2px 6px;
+            }
+            
+            .cyber-message {
+                max-width: 90%;
+            }
+            
+            .cyber-avatar {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .message-bubble {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .message-video {
+                max-width: 150px;
+                max-height: 150px;
+            }
+            
+            .cyber-input-area {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            
+            .cyber-message-input {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .cyber-tool-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+            
+            .tool-buttons-container {
+                gap: 6px;
+            }
+            
+            .login-container {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .hologram-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .neon-navbar {
+                font-size: 14px;
+            }
+            
+            .neon-navbar-title {
+                font-size: 14px;
+                max-width: calc(100% - 130px);
+            }
+            
+            #real-time-clock {
+                display: none;
+            }
+            
+            .tool-buttons-container {
+                gap: 4px;
+            }
+        }
+        
+        /* 小屏幕隐藏部分按钮，使用下拉菜单 */
+        @media (max-width: 400px) {
+            .desktop-tools {
+                display: none !important;
+            }
+            
+            .mobile-tools-dropdown {
+                display: block !important;
+            }
+        }
+        
+        @media (min-width: 401px) {
+            .desktop-tools {
+                display: flex !important;
+            }
+            
+            .mobile-tools-dropdown {
+                display: none !important;
+            }
+        }
+        
+        /* 动画定义 */
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes portalGlow {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(15px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes pawBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes uploading {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 30, 60, 0.3);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--neon-cyan), var(--neon-pink));
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--neon-pink), var(--neon-cyan));
+        }
+        
+        /* 文件输入隐藏 */
+        .file-input {
+            display: none;
+        }
+        
+        /* 加载动画 */
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-top: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 视频上传进度 */
+        .upload-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(30, 30, 60, 0.5);
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* 用户欢迎信息 */
+        .user-welcome {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .user-welcome-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-cyan);
+            margin: 0 auto 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px var(--neon-cyan);
+            position: relative;
+        }
+        
+        .user-welcome-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-welcome-avatar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            animation: portalGlow 2s infinite;
+        }
+        
+        .user-welcome-name {
+            font-size: 24px;
+            color: var(--neon-cyan);
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px var(--neon-cyan);
+        }
+        
+        .user-welcome-id {
+            font-size: 14px;
+            color: #aaf;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="holographic-bg"></div>
+    <div class="grid-lines"></div>
+    
+    <!-- 登录页面 -->
+    <div id="login-page" class="page active">
+        <div class="login-portal">
+            <div class="login-container">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="font-size: 28px; color: var(--neon-cyan); margin-bottom: 10px; text-shadow: 0 0 15px var(--neon-cyan);">
+                        杰同学的小窝<span style="animation: pawBeat 1.5s infinite ease-in-out; display: inline-block;">🐾</span>
+                    </h1>
+                    <p style="color: #aaf; font-size: 14px; letter-spacing: 0.5px;">畅享实时聊天 · 好友私聊 · 群组交流</p>
+                </div>
+                
+                <div id="auth-prompt">
+                    <h2 id="auth-title" style="text-align: center; margin-bottom: 20px; color: var(--neon-cyan); font-size: 18px; font-weight: 700; text-shadow: 0 0 8px var(--neon-cyan);">登录您的账户</h2>
+                    <input type="text" class="cyber-input" id="account-input" placeholder="请输入账号（3-20位字符）">
+                    <input type="password" class="cyber-input" id="password-input" placeholder="请输入密码（至少6位）">
+                    
+                    <div style="display: flex; align-items: center; gap: 8px; margin: 15px 0; color: #aaf; font-size: 13px;">
+                        <input type="checkbox" id="remember-checkbox">
+                        <label for="remember-checkbox">记住账号密码</label>
+                    </div>
+                    
+                    <button class="cyber-btn" id="login-btn">登录</button>
+                    <button class="cyber-btn" id="register-btn" style="display: none;">注册</button>
+                    
+                    <div id="switch-auth" style="text-align: center; color: var(--neon-pink); cursor: pointer; margin-top: 15px; font-weight: 600; text-shadow: 0 0 8px var(--neon-pink); transition: all 0.3s ease; font-size: 13px;">没有账号？点击注册</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 功能选择页面 -->
+    <div id="feature-selection-page" class="feature-selection-page">
+        <div class="user-welcome">
+            <div class="user-welcome-avatar">
+                <img id="welcome-avatar" src="">
+            </div>
+            <div class="user-welcome-name" id="welcome-username">欢迎回来</div>
+            <div class="user-welcome-id">ID: <span id="welcome-userid">000000</span></div>
+        </div>
+        
+        <div class="hologram-grid">
+            <div class="hologram-card" id="public-chat-card">
+                <div class="hologram-icon">👥</div>
+                <div class="hologram-text">实时聊天室</div>
+            </div>
+            
+            <div class="hologram-card" id="private-chat-card">
+                <div class="hologram-icon">💬</div>
+                <div class="hologram-text">好友私聊</div>
+            </div>
+            
+            <div class="hologram-card" id="group-chat-card">
+                <div class="hologram-icon">👨‍👩‍👧‍👦</div>
+                <div class="hologram-text">群组聊天</div>
+            </div>
+            
+            <div class="hologram-card" id="add-friend-card">
+                <div class="hologram-icon">➕</div>
+                <div class="hologram-text">添加好友</div>
+            </div>
+            
+            <div class="hologram-card" id="friend-requests-card">
+                <div class="hologram-icon">📨</div>
+                <div class="hologram-text">好友申请</div>
+            </div>
+            
+            <div class="hologram-card" id="profile-card">
+                <div class="hologram-icon">👤</div>
+                <div class="hologram-text">个人资料</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 实时聊天室页面 -->
+    <div id="public-chat-page" class="page">
+        <div class="neon-navbar">
+            <button class="hologram-btn" id="public-switch-btn">🔄 切换场景</button>
+            <div class="neon-navbar-title" id="public-chat-title">实时聊天室</div>
+            <div id="real-time-clock">00:00:00</div>
+        </div>
+        
+        <div class="cyber-chat-container">
+            <div style="padding: 10px; text-align: center; background: rgba(30, 30, 60, 0.7); border-bottom: 2px solid rgba(0, 255, 255, 0.3);" id="public-status">
+                <span id="online-count" style="color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green);">0</span>人在线
+            </div>
+            
+            <div class="cyber-chat-box" id="public-chat-box"></div>
+            
+            <div class="cyber-input-area">
+                <input type="text" id="public-message-input" class="cyber-message-input" placeholder="输入消息...">
+                
+                <!-- 桌面端工具按钮 -->
+                <div class="tool-buttons-container desktop-tools">
+                    <button class="cyber-tool-btn" id="public-emoji-btn">😀</button>
+                    <label class="cyber-tool-btn" for="public-img-input">
+                        <i class="fas fa-image"></i>
+                    </label>
+                    <input type="file" id="public-img-input" class="file-input" accept="image/*">
+                    <label class="cyber-tool-btn" for="public-video-input">
+                        <i class="fas fa-video"></i>
+                    </label>
+                    <input type="file" id="public-video-input" class="file-input" accept="video/*">
+                </div>
+                
+                <!-- 移动端工具按钮下拉菜单 -->
+                <div class="mobile-tools-dropdown">
+                    <button class="cyber-tool-btn" id="mobile-public-tools-btn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="mobile-tools-menu" id="public-mobile-tools-menu">
+                        <label class="mobile-tool-btn" for="public-img-input">
+                            <i class="fas fa-image"></i> 图片
+                        </label>
+                        <label class="mobile-tool-btn" for="public-video-input">
+                            <i class="fas fa-video"></i> 视频
+                        </label>
+                        <button class="mobile-tool-btn" id="mobile-public-emoji-btn">
+                            <span>😀</span> 表情
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="cyber-tool-btn cyber-send-btn" id="public-send-btn">发送</button>
+            </div>
+            
+            <div class="hologram-emoji-panel" id="public-emoji-panel"></div>
+        </div>
+    </div>
+    
+    <!-- 好友列表页面 -->
+    <div id="friends-page" class="page">
+        <div class="neon-navbar">
+            <button class="hologram-btn" id="friends-switch-btn">🔄 切换场景</button>
+            <div class="neon-navbar-title" id="friends-title">好友列表</div>
+            <div id="real-time-clock">00:00:00</div>
+        </div>
+        
+        <div class="cyber-list-page">
+            <h3 style="color: var(--neon-cyan); margin-bottom: 15px; text-shadow: 0 0 8px var(--neon-cyan);">我的好友</h3>
+            <div class="cyber-friend-list" id="friend-list"></div>
+        </div>
+    </div>
+    
+    <!-- 私聊页面 -->
+    <div id="private-chat-page" class="page">
+        <div class="neon-navbar">
+            <button class="hologram-btn" id="private-switch-btn">🔄 切换场景</button>
+            <div class="neon-navbar-title" id="private-chat-title">选择好友开始私聊</div>
+            <div id="real-time-clock">00:00:00</div>
+        </div>
+        
+        <div class="cyber-chat-container">
+            <div class="cyber-chat-box" id="private-chat-box"></div>
+            
+            <div class="cyber-input-area">
+                <input type="text" id="private-message-input" class="cyber-message-input" placeholder="选择好友后开始聊天" disabled>
+                
+                <!-- 桌面端工具按钮 -->
+                <div class="tool-buttons-container desktop-tools">
+                    <button class="cyber-tool-btn" id="private-emoji-btn" disabled>😀</button>
+                    <label class="cyber-tool-btn" for="private-img-input">
+                        <i class="fas fa-image"></i>
+                    </label>
+                    <input type="file" id="private-img-input" class="file-input" accept="image/*" disabled>
+                    <label class="cyber-tool-btn" for="private-video-input">
+                        <i class="fas fa-video"></i>
+                    </label>
+                    <input type="file" id="private-video-input" class="file-input" accept="video/*" disabled>
+                </div>
+                
+                <!-- 移动端工具按钮下拉菜单 -->
+                <div class="mobile-tools-dropdown">
+                    <button class="cyber-tool-btn" id="mobile-private-tools-btn" disabled>
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="mobile-tools-menu" id="private-mobile-tools-menu">
+                        <label class="mobile-tool-btn" for="private-img-input">
+                            <i class="fas fa-image"></i> 图片
+                        </label>
+                        <label class="mobile-tool-btn" for="private-video-input">
+                            <i class="fas fa-video"></i> 视频
+                        </label>
+                        <button class="mobile-tool-btn" id="mobile-private-emoji-btn">
+                            <span>😀</span> 表情
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="cyber-tool-btn cyber-send-btn" id="private-send-btn" disabled>发送</button>
+            </div>
+            
+            <div class="hologram-emoji-panel" id="private-emoji-panel"></div>
+        </div>
+    </div>
+    
+    <!-- 群聊列表页面 -->
+    <div id="groups-page" class="page">
+        <div class="neon-navbar">
+            <button class="hologram-btn" id="groups-switch-btn">🔄 切换场景</button>
+            <div class="neon-navbar-title" id="groups-title">我的群聊</div>
+            <div id="real-time-clock">00:00:00</div>
+        </div>
+        
+        <div class="cyber-list-page">
+            <h3 style="color: var(--neon-cyan); margin-bottom: 15px; text-shadow: 0 0 8px var(--neon-cyan);">我的群聊</h3>
+            <button class="cyber-btn" id="create-group-btn" style="margin-bottom: 15px; padding: 10px;">创建新群聊</button>
+            <div class="cyber-group-list" id="group-list"></div>
+        </div>
+    </div>
+    
+    <!-- 添加好友页面 -->
+    <div id="add-friend-page" class="page">
+        <div class="neon-navbar">
+            <button class="hologram-btn" id="add-friend-switch-btn">🔄 切换场景</button>
+            <div class="neon-navbar-title" id="add-friend-title">添加好友</div>
+            <div id="real-time-clock">00:00:00</div>
+        </div>
+        
+        <div class="cyber-list-page">
+            <h3 style="color: var(--neon-cyan); margin-bottom: 15px; text-shadow: 0 0 8px var(--neon-cyan);">添加好友</h3>
+            <div style="margin: 15px 0;">
+                <input type="text" id="friend-id-input" class="cyber-input" placeholder="输入6位好友ID" style="margin-bottom: 10px;">
+                <button class="cyber-btn" id="search-friend-btn" style="margin-top: 5px;">搜索好友</button>
+            </div>
+            
+            <div id="search-result"></div>
+        </div>
+    </div>
+    
+    <!-- 好友申请页面 -->
+    <div id="friend-requests-page" class="page">
+        <div class="neon-navbar">
+            <button class="hologram-btn" id="requests-switch-btn">🔄 切换场景</button>
+            <div class="neon-navbar-title" id="requests-title">好友申请</div>
+            <div id="real-time-clock">00:00:00</div>
+        </div>
+        
+        <div class="cyber-list-page">
+            <h3 style="color: var(--neon-cyan); margin-bottom: 15px; text-shadow: 0 0 8px var(--neon-cyan);">待处理的好友申请</h3>
+            <div id="friend-requests-list"></div>
+        </div>
+    </div>
+    
+    <!-- 个人资料页面 -->
+    <div id="profile-page" class="page">
+        <div class="neon-navbar">
+            <button class="hologram-btn" id="profile-switch-btn">🔄 切换场景</button>
+            <div class="neon-navbar-title" id="profile-title">个人资料</div>
+            <div id="real-time-clock">00:00:00</div>
+        </div>
+        
+        <div class="cyber-list-page">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="position: relative; display: inline-block;">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--neon-cyan); overflow: hidden; margin: 0 auto 10px; box-shadow: 0 0 15px var(--neon-cyan);">
+                        <img id="profile-avatar-img" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <label for="avatar-upload" style="position: absolute; bottom: 0; right: 0; background: var(--neon-cyan); color: var(--deep-space); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 8px var(--neon-cyan); font-size: 14px;">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="avatar-upload" class="file-input" accept="image/*">
+                </div>
+                <h2 id="profile-username" style="color: var(--neon-cyan); margin-bottom: 8px; text-shadow: 0 0 8px var(--neon-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">未登录</h2>
+                <div style="margin: 8px 0;">
+                    <span style="color: var(--starlight);">ID: </span>
+                    <span id="profile-id" style="font-family: 'Courier New', monospace; color: var(--neon-cyan); text-shadow: 0 0 3px var(--neon-cyan);">000000</span>
+                    <button id="copy-id-btn" style="margin-left: 8px; padding: 3px 10px; background: var(--neon-cyan); color: var(--deep-space); border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;">复制</button>
+                </div>
+            </div>
+            
+            <div style="background: rgba(30, 30, 60, 0.7); backdrop-filter: blur(5px); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 2px solid rgba(0, 255, 255, 0.3);">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0, 255, 255, 0.3);">
+                    <span style="color: var(--starlight); font-size: 13px;">注册时间</span>
+                    <span id="profile-register-time" style="color: var(--neon-cyan); font-size: 13px;">-</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0, 255, 255, 0.3);">
+                    <span style="color: var(--starlight); font-size: 13px;">最后登录</span>
+                    <span id="profile-last-login" style="color: var(--neon-cyan); font-size: 13px;">-</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <span style="color: var(--starlight); font-size: 13px;">好友数量</span>
+                    <span id="profile-friends-count" style="color: var(--neon-green); text-shadow: 0 0 3px var(--neon-green); font-size: 13px;">0</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center; color: var(--starlight); font-size: 12px; margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                <h4 style="color: var(--neon-cyan); margin-bottom: 8px; text-shadow: 0 0 8px var(--neon-cyan);">杰同学的小窝</h4>
+                <p style="margin-bottom: 5px;">版本 2.0.0</p>
+                <p>作者: 杰同学 <span style="animation: pawBeat 1.5s infinite ease-in-out; display: inline-block;">🐾</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 场景切换弹窗 -->
+    <div class="hologram-modal" id="scene-switch-modal">
+        <div class="hologram-modal-content">
+            <button class="modal-close" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--neon-pink); font-size: 20px; cursor: pointer; text-shadow: 0 0 8px var(--neon-pink);">×</button>
+            <h3 style="color: var(--neon-cyan); margin-bottom: 15px; text-shadow: 0 0 8px var(--neon-cyan); text-align: center;">切换功能场景</h3>
+            <div class="scene-option" data-target="public-chat-page" style="padding: 10px; background: rgba(30, 30, 60, 0.7); border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(0, 255, 255, 0.3); transition: all 0.3s ease;">
+                👥 实时聊天室
+            </div>
+            <div class="scene-option" data-target="friends-page" style="padding: 10px; background: rgba(30, 30, 60, 0.7); border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(0, 255, 255, 0.3); transition: all 0.3s ease;">
+                💬 好友列表（私聊入口）
+            </div>
+            <div class="scene-option" data-target="groups-page" style="padding: 10px; background: rgba(30, 30, 60, 0.7); border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(0, 255, 255, 0.3); transition: all 0.3s ease;">
+                👨‍👩‍👧‍👦 群聊列表
+            </div>
+            <div class="scene-option" data-target="add-friend-page" style="padding: 10px; background: rgba(30, 30, 60, 0.7); border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(0, 255, 255, 0.3); transition: all 0.3s ease;">
+                ➕ 添加好友
+            </div>
+            <div class="scene-option" data-target="friend-requests-page" style="padding: 10px; background: rgba(30, 30, 60, 0.7); border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(0, 255, 255, 0.3); transition: all 0.3s ease;">
+                📨 好友申请
+            </div>
+            <div class="scene-option" data-target="profile-page" style="padding: 10px; background: rgba(30, 30, 60, 0.7); border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(0, 255, 255, 0.3); transition: all 0.3s ease;">
+                👤 个人资料
+            </div>
+        </div>
+    </div>
+    
+    <!-- 系统通知弹窗 -->
+    <div class="hologram-modal" id="notification-modal">
+        <div class="hologram-modal-content">
+            <button class="modal-close" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--neon-pink); font-size: 20px; cursor: pointer; text-shadow: 0 0 8px var(--neon-pink);">×</button>
+            <h3 id="notification-title" style="color: var(--neon-cyan); margin-bottom: 15px; text-shadow: 0 0 8px var(--neon-cyan); text-align: center;">系统通知</h3>
+            <p id="notification-message" style="margin-bottom: 15px; color: var(--starlight); text-align: center; line-height: 1.4; font-size: 14px;"></p>
+            <div style="text-align: center;">
+                <button id="notification-confirm-btn" style="padding: 8px 25px; background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink)); color: var(--deep-space); border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 图片预览弹窗 -->
+    <div class="hologram-modal" id="image-preview-modal">
+        <div class="hologram-modal-content" style="background: none; border: none; max-width: 95%; max-height: 95%; padding: 0;">
+            <button class="modal-close" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; width: 35px; height: 35px; border: none; font-size: 20px; cursor: pointer; z-index: 1;">×</button>
+            <img id="preview-image" style="max-width: 100%; max-height: 100%; border-radius: 8px;">
+        </div>
+    </div>
+    
+    <!-- 视频预览弹窗 -->
+    <div class="hologram-modal" id="video-preview-modal">
+        <div class="hologram-modal-content" style="background: none; border: none; max-width: 95%; max-height: 95%; padding: 0;">
+            <button class="modal-close" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; border-radius: 50%; width: 35px; height: 35px; border: none; font-size: 20px; cursor: pointer; z-index: 1;">×</button>
+            <video id="preview-video" controls style="max-width: 100%; max-height: 100%; border-radius: 8px; background: #000;"></video>
+        </div>
+    </div>
+    
+    <!-- 用户资料弹窗 -->
+    <div class="hologram-modal user-profile-modal" id="user-profile-modal">
+        <div class="hologram-modal-content">
+            <button class="modal-close" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--neon-pink); font-size: 20px; cursor: pointer; text-shadow: 0 0 8px var(--neon-pink);">×</button>
+            <div class="user-profile-info" id="user-profile-info">
+                <!-- 动态加载用户资料 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 创建群聊弹窗 -->
+    <div class="hologram-modal create-group-modal" id="create-group-modal">
+        <div class="hologram-modal-content">
+            <button class="modal-close" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--neon-pink); font-size: 20px; cursor: pointer; text-shadow: 0 0 8px var(--neon-pink);">×</button>
+            <h3 style="color: var(--neon-cyan); margin-bottom: 15px; text-shadow: 0 0 8px var(--neon-cyan); text-align: center;">创建新群聊</h3>
+            <div class="create-group-form">
+                <input type="text" id="group-name-input" class="cyber-input" placeholder="输入群聊名称">
+                <input type="text" id="group-desc-input" class="cyber-input" placeholder="输入群聊描述（可选）">
+                <div style="margin-bottom: 10px;">
+                    <label style="color: var(--starlight); font-size: 13px; margin-bottom: 5px; display: block;">选择好友加入群聊：</label>
+                    <div class="friend-select-list" id="friend-select-list">
+                        <!-- 好友选择列表 -->
+                    </div>
+                </div>
+                <button class="cyber-btn" id="create-group-submit-btn">创建群聊</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 消息长按菜单 -->
+    <div class="message-context-menu" id="message-context-menu">
+        <div class="menu-item" id="withdraw-message-btn">撤回消息</div>
+        <div class="menu-item" id="copy-message-btn">复制消息</div>
+        <div class="menu-item" id="delete-message-btn">删除消息</div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage-compat.js"></script>
+    
+    <script>
+        // Firebase配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkSTnvIW3JZOHjp1b-M0oEef_xQl1hSlE",
+            authDomain: "jtxnb-a5bdc.firebaseapp.com",
+            databaseURL: "https://jtxnb-a5bdc-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "jtxnb-a5bdc",
+            storageBucket: "jtxnb-a5bdc.firebasestorage.app",
+            messagingSenderId: "555246639656",
+            appId: "1:555246639656:web:051e3efb9dcc496459f31d",
+            measurementId: "G-RD8X8JQ38M"
+        };
+        
+        // 初始化Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const database = firebase.database();
+        const storage = firebase.storage();
+        
+        // 数据库引用
+        const usersRef = database.ref('chat-users');
+        const publicMessagesRef = database.ref('public-chat-messages');
+        const privateMessagesRef = database.ref('private-chat-messages');
+        const groupMessagesRef = database.ref('group-chat-messages');
+        const friendsRef = database.ref('chat-friends');
+        const onlineUsersRef = database.ref('online-users');
+        const friendRequestsRef = database.ref('friend-requests');
+        const groupsRef = database.ref('chat-groups');
+        const groupMembersRef = database.ref('group-members');
+        const readReceiptsRef = database.ref('read-receipts');
+        
+        // 全局变量
+        let currentAccount = '';
+        let currentUserId = '';
+        let currentAvatar = '';
+        let currentPrivateChatFriend = '';
+        let currentPrivateChatFriendId = '';
+        let currentGroupChat = '';
+        let messageLongPressTimer = null;
+        let selectedMessageId = null;
+        let selectedMessageType = null; // 'public', 'private', 'group'
+        let activeInput = null; // 当前活动的输入框
+        
+        const DEFAULT_AVATAR = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c4zIwLAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3owQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92U2hXHF/C1M8uP/ZtYdiuj26UdAdQQSXQErwSOMzt/XWRWAz5GuSBIkwG1H3fabJ2OsUOUhGC6tK4EMtJO0ttC6IBD3kM0ve0tJwMdSfjZo+EEISaeTr9P3wYrGjXqyC1krcKdhMpxEnt5JetoulscpyzhXN5FRPUy+ZmE4xGZcZ9bVnuguEnnqGR8ZlK9pZwB3vU2h5HdbrVqteek9tLDsM0ZEP6n3pqJn2LlfZzhFjtY2mxK082bjT2DcJMW1iFEKBOAv79OUAAAAASUVORK5CYII=';
+        
+        // 表情包列表
+        const emojiList = ['😀', '😁', '😂', '🤣', '😃', '😄', '😅', '😆', '😉', '😊', 
+                          '😋', '😎', '😍', '😘', '🥰', '😗', '😙', '😚', '🙂', '🤗', 
+                          '🤩', '🤔', '🤨', '😐', '😑', '😶', '🙄', '😏', '😣', '😥', 
+                          '😮', '🤐', '😯', '😪', '😫', '🥱', '😴', '😌', '😛', '😜'];
+        
+        // 页面加载初始化
+        window.addEventListener('load', () => {
+            initEventListeners();
+            initEmojiPanels();
+            tryAutoLogin();
+            updateRealTimeClock();
+            setInterval(updateRealTimeClock, 1000);
+            
+            // 监听窗口大小变化，确保移动端适配
+            window.addEventListener('resize', handleResize);
+            handleResize();
+            
+            // 监听输入框焦点，设置当前活动输入框
+            document.addEventListener('focusin', function(e) {
+                if (e.target.classList.contains('cyber-message-input')) {
+                    activeInput = e.target;
+                }
+            });
+        });
+        
+        // 处理窗口大小变化
+        function handleResize() {
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (window.innerWidth <= 480) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0');
+            } else {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=yes');
+            }
+        }
+        
+        // 更新实时时钟
+        function updateRealTimeClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.querySelectorAll('#real-time-clock').forEach(clock => {
+                clock.textContent = `${hours}:${minutes}:${seconds}`;
+            });
+        }
+        
+        // 生成设备ID
+        function generateDeviceId() {
+            let deviceId = localStorage.getItem('chat_device_id');
+            if (!deviceId) {
+                deviceId = 'DEV_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('chat_device_id', deviceId);
+            }
+            return deviceId;
+        }
+        
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 登录注册切换
+            document.getElementById('switch-auth').addEventListener('click', toggleAuthMode);
+            
+            // 登录按钮
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            
+            // 注册按钮
+            document.getElementById('register-btn').addEventListener('click', handleRegister);
+            
+            // 回车键登录/注册
+            document.getElementById('password-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    if (document.getElementById('login-btn').style.display !== 'none') {
+                        handleLogin();
+                    } else {
+                        handleRegister();
+                    }
+                }
+            });
+            
+            // 功能卡片点击
+            document.getElementById('public-chat-card').addEventListener('click', () => {
+                switchToPage('public-chat-page');
+                loadPublicChat();
+            });
+            
+            document.getElementById('private-chat-card').addEventListener('click', () => {
+                switchToPage('friends-page');
+                loadFriendList();
+            });
+            
+            document.getElementById('group-chat-card').addEventListener('click', () => {
+                switchToPage('groups-page');
+                loadGroupList();
+            });
+            
+            document.getElementById('add-friend-card').addEventListener('click', () => {
+                switchToPage('add-friend-page');
+            });
+            
+            document.getElementById('friend-requests-card').addEventListener('click', () => {
+                switchToPage('friend-requests-page');
+                loadFriendRequests();
+            });
+            
+            document.getElementById('profile-card').addEventListener('click', () => {
+                switchToPage('profile-page');
+                loadProfile();
+            });
+            
+            // 场景切换按钮
+            document.querySelectorAll('.hologram-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('scene-switch-modal').style.display = 'flex';
+                });
+            });
+            
+            // 场景选项
+            document.querySelectorAll('.scene-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const target = option.getAttribute('data-target');
+                    
+                    // 根据目标页面加载相应内容
+                    if (target === 'public-chat-page') {
+                        loadPublicChat();
+                    } else if (target === 'friends-page') {
+                        loadFriendList();
+                    } else if (target === 'groups-page') {
+                        loadGroupList();
+                    } else if (target === 'friend-requests-page') {
+                        loadFriendRequests();
+                    } else if (target === 'profile-page') {
+                        loadProfile();
+                    }
+                    
+                    switchToPage(target);
+                    document.getElementById('scene-switch-modal').style.display = 'none';
+                });
+            });
+            
+            // 关闭弹窗按钮
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.closest('.hologram-modal').style.display = 'none';
+                });
+            });
+            
+            // 通知确认按钮
+            document.getElementById('notification-confirm-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('notification-modal').style.display = 'none';
+            });
+            
+            // 发送消息按钮
+            document.getElementById('public-send-btn').addEventListener('click', sendPublicMessage);
+            document.getElementById('private-send-btn').addEventListener('click', sendPrivateMessage);
+            
+            // 搜索好友按钮
+            document.getElementById('search-friend-btn').addEventListener('click', searchFriend);
+            
+            // 复制ID按钮
+            document.getElementById('copy-id-btn').addEventListener('click', copyMyID);
+            
+            // 创建群聊按钮
+            document.getElementById('create-group-btn').addEventListener('click', () => {
+                document.getElementById('create-group-modal').style.display = 'flex';
+                loadFriendsForGroupSelection();
+            });
+            
+            document.getElementById('create-group-submit-btn').addEventListener('click', createGroup);
+            
+            // 消息输入框回车发送
+            document.getElementById('public-message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendPublicMessage();
+            });
+            
+            document.getElementById('private-message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendPrivateMessage();
+            });
+            
+            // 表情按钮
+            document.getElementById('public-emoji-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleEmojiPanel('public');
+            });
+            
+            document.getElementById('private-emoji-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleEmojiPanel('private');
+            });
+            
+            // 移动端表情按钮
+            document.getElementById('mobile-public-emoji-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleEmojiPanel('public');
+                document.getElementById('public-mobile-tools-menu').style.display = 'none';
+            });
+            
+            // 图片上传
+            document.getElementById('public-img-input').addEventListener('change', (e) => {
+                handleImageUpload(e, 'public');
+            });
+            
+            document.getElementById('private-img-input').addEventListener('change', (e) => {
+                handleImageUpload(e, 'private');
+            });
+            
+            // 视频上传
+            document.getElementById('public-video-input').addEventListener('change', (e) => {
+                handleVideoUpload(e, 'public');
+            });
+            
+            document.getElementById('private-video-input').addEventListener('change', (e) => {
+                handleVideoUpload(e, 'private');
+            });
+            
+            // 头像上传
+            document.getElementById('avatar-upload').addEventListener('change', handleAvatarUpload);
+            
+            // 移动端工具菜单
+            document.getElementById('mobile-public-tools-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = document.getElementById('public-mobile-tools-menu');
+                menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            document.getElementById('mobile-private-tools-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = document.getElementById('private-mobile-tools-menu');
+                menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // 点击外部关闭表情面板
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.hologram-emoji-panel') && 
+                    !e.target.closest('#public-emoji-btn') && 
+                    !e.target.closest('#private-emoji-btn') &&
+                    !e.target.closest('#mobile-public-emoji-btn') &&
+                    e.target.id !== 'public-emoji-btn' &&
+                    e.target.id !== 'private-emoji-btn') {
+                    document.querySelectorAll('.hologram-emoji-panel').forEach(panel => {
+                        panel.style.display = 'none';
+                    });
+                }
+                
+                // 点击外部关闭移动端工具菜单
+                if (!e.target.closest('.mobile-tools-menu') && 
+                    !e.target.closest('.mobile-tools-dropdown') &&
+                    e.target.id !== 'mobile-public-tools-btn' &&
+                    e.target.id !== 'mobile-private-tools-btn') {
+                    document.querySelectorAll('.mobile-tools-menu').forEach(menu => {
+                        menu.style.display = 'none';
+                    });
+                }
+            });
+            
+            // 点击外部关闭模态窗口
+            document.querySelectorAll('.hologram-modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 点击图片预览
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('message-img')) {
+                    document.getElementById('preview-image').src = e.target.src;
+                    document.getElementById('image-preview-modal').style.display = 'flex';
+                }
+                
+                // 点击视频预览
+                if (e.target.classList.contains('message-video') || 
+                    e.target.parentElement.classList.contains('message-video')) {
+                    const videoElement = e.target.classList.contains('message-video') ? 
+                        e.target : e.target.parentElement;
+                    document.getElementById('preview-video').src = videoElement.src;
+                    document.getElementById('video-preview-modal').style.display = 'flex';
+                }
+            });
+            
+            // 消息长按事件
+            document.addEventListener('touchstart', handleMessageTouchStart, { passive: true });
+            document.addEventListener('touchend', handleMessageTouchEnd);
+            document.addEventListener('touchmove', handleMessageTouchMove);
+            
+            // 消息菜单选项
+            document.getElementById('withdraw-message-btn').addEventListener('click', withdrawMessage);
+            document.getElementById('copy-message-btn').addEventListener('click', copyMessage);
+            document.getElementById('delete-message-btn').addEventListener('click', deleteMessage);
+            
+            // 点击其他地方关闭消息菜单
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.message-context-menu') && 
+                    !e.target.closest('.cyber-message') &&
+                    !e.target.closest('.message-bubble')) {
+                    document.getElementById('message-context-menu').style.display = 'none';
+                }
+            });
+        }
+        
+        // 初始化表情面板 - 修复版
+        function initEmojiPanels() {
+            const publicPanel = document.getElementById('public-emoji-panel');
+            const privatePanel = document.getElementById('private-emoji-panel');
+            
+            // 清空面板
+            publicPanel.innerHTML = '';
+            privatePanel.innerHTML = '';
+            
+            emojiList.forEach(emoji => {
+                // 公共聊天表情
+                const span = document.createElement('span');
+                span.className = 'hologram-emoji';
+                span.textContent = emoji;
+                span.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    insertEmoji(emoji, 'public');
+                });
+                publicPanel.appendChild(span);
+                
+                // 私聊表情
+                const span2 = document.createElement('span');
+                span2.className = 'hologram-emoji';
+                span2.textContent = emoji;
+                span2.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    insertEmoji(emoji, 'private');
+                });
+                privatePanel.appendChild(span2);
+            });
+        }
+        
+        // 切换表情面板
+        function toggleEmojiPanel(type) {
+            const panel = document.getElementById(`${type}-emoji-panel`);
+            const isVisible = panel.style.display === 'flex';
+            
+            document.querySelectorAll('.hologram-emoji-panel').forEach(p => {
+                p.style.display = 'none';
+            });
+            
+            if (!isVisible) {
+                panel.style.display = 'flex';
+                panel.style.bottom = '70px';
+            }
+        }
+        
+        // 插入表情 - 修复版，确保能正确插入
+        function insertEmoji(emoji, type) {
+            let input;
+            
+            // 如果指定了类型，使用对应输入框
+            if (type) {
+                input = document.getElementById(`${type}-message-input`);
+            } else {
+                // 否则使用当前活动输入框
+                input = activeInput;
+            }
+            
+            if (!input || input.disabled) {
+                console.error(`找不到输入框或输入框被禁用: ${type}-message-input`);
+                return;
+            }
+            
+            // 确保输入框获得焦点
+            input.focus();
+            
+            // 获取当前光标位置
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const value = input.value;
+            
+            // 在光标位置插入表情
+            input.value = value.substring(0, start) + emoji + value.substring(end);
+            
+            // 移动光标到插入位置之后
+            const newPosition = start + emoji.length;
+            input.selectionStart = newPosition;
+            input.selectionEnd = newPosition;
+            
+            // 关闭表情面板
+            const panel = document.getElementById(`${type}-emoji-panel`);
+            if (panel) {
+                panel.style.display = 'none';
+            }
+            
+            // 触发输入事件，确保UI更新
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        // 切换登录注册模式
+        function toggleAuthMode() {
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const switchAuth = document.getElementById('switch-auth');
+            const authTitle = document.getElementById('auth-title');
+            
+            if (loginBtn.style.display !== 'none') {
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'block';
+                switchAuth.textContent = '已有账号？点击登录';
+                authTitle.textContent = '注册新账户';
+            } else {
+                loginBtn.style.display = 'block';
+                registerBtn.style.display = 'none';
+                switchAuth.textContent = '没有账号？点击注册';
+                authTitle.textContent = '登录您的账户';
+            }
+        }
+        
+        // 尝试自动登录
+        function tryAutoLogin() {
+            const savedAccount = localStorage.getItem('chat_saved_account');
+            const savedPassword = localStorage.getItem('chat_saved_password');
+            
+            if (savedAccount && savedPassword) {
+                document.getElementById('account-input').value = savedAccount;
+                document.getElementById('password-input').value = savedPassword;
+                document.getElementById('remember-checkbox').checked = true;
+            }
+        }
+        
+        // 处理登录
+        async function handleLogin() {
+            const account = document.getElementById('account-input').value.trim();
+            const password = document.getElementById('password-input').value.trim();
+            
+            if (!account || !password) {
+                showNotification('输入错误', '账号和密码不能为空！');
+                return;
+            }
+            
+            try {
+                const snapshot = await usersRef.child(account).once('value');
+                
+                if (!snapshot.exists()) {
+                    showNotification('登录失败', '账号不存在！');
+                    return;
+                }
+                
+                const userData = snapshot.val();
+                
+                if (userData.password !== password) {
+                    showNotification('登录失败', '密码错误！');
+                    return;
+                }
+                
+                const currentDeviceId = generateDeviceId();
+                
+                if (userData.deviceId && userData.deviceId !== currentDeviceId) {
+                    showNotification('登录失败', '该账号已绑定其他设备，无法在此设备登录！');
+                    return;
+                }
+                
+                if (!userData.deviceId) {
+                    await usersRef.child(account).update({ 
+                        deviceId: currentDeviceId,
+                        lastLoginTime: new Date().getTime() 
+                    });
+                } else {
+                    await usersRef.child(account).update({ 
+                        lastLoginTime: new Date().getTime() 
+                    });
+                }
+                
+                currentAccount = account;
+                currentUserId = userData.userId;
+                currentAvatar = userData.avatar || DEFAULT_AVATAR;
+                
+                if (document.getElementById('remember-checkbox').checked) {
+                    localStorage.setItem('chat_saved_account', account);
+                    localStorage.setItem('chat_saved_password', password);
+                } else {
+                    localStorage.removeItem('chat_saved_account');
+                    localStorage.removeItem('chat_saved_password');
+                }
+                
+                await markUserOnline();
+                
+                // 登录成功后切换到功能选择页面
+                showWelcomeScreen();
+                
+            } catch (error) {
+                showNotification('登录失败', '网络错误，请稍后重试！');
+                console.error('登录错误:', error);
+            }
+        }
+        
+        // 处理注册
+        async function handleRegister() {
+            const account = document.getElementById('account-input').value.trim();
+            const password = document.getElementById('password-input').value.trim();
+            
+            if (!account || !password) {
+                showNotification('输入错误', '账号和密码不能为空！');
+                return;
+            }
+            
+            if (account.length < 3 || account.length > 20) {
+                showNotification('输入错误', '账号长度应为3-20位字符！');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('输入错误', '密码长度至少6位！');
+                return;
+            }
+            
+            try {
+                const snapshot = await usersRef.child(account).once('value');
+                
+                if (snapshot.exists()) {
+                    showNotification('注册失败', '该账号已存在，请更换账号！');
+                    return;
+                }
+                
+                const userId = generateUserId();
+                const now = new Date().getTime();
+                const deviceId = generateDeviceId();
+                
+                await usersRef.child(account).set({
+                    password: password,
+                    deviceId: deviceId,
+                    userId: userId,
+                    avatar: DEFAULT_AVATAR,
+                    registerTime: now,
+                    lastLoginTime: now,
+                    username: account
+                });
+                
+                showNotification('注册成功', '账号创建成功，请登录！');
+                
+                toggleAuthMode();
+                document.getElementById('password-input').value = '';
+                
+            } catch (error) {
+                showNotification('注册失败', '网络错误，请稍后重试！');
+                console.error('注册错误:', error);
+            }
+        }
+        
+        // 显示欢迎界面
+        function showWelcomeScreen() {
+            // 更新欢迎界面信息
+            document.getElementById('welcome-username').textContent = currentAccount;
+            document.getElementById('welcome-userid').textContent = currentUserId;
+            document.getElementById('welcome-avatar').src = currentAvatar;
+            
+            // 切换到功能选择页面
+            document.getElementById('login-page').classList.remove('active');
+            document.getElementById('feature-selection-page').classList.add('active');
+            
+            showNotification('登录成功', `欢迎回来，${currentAccount}！`);
+        }
+        
+        // 生成6位用户ID
+        function generateUserId() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+        
+        // 检查登录状态
+        function checkLogin() {
+            if (!currentAccount) {
+                showNotification('未登录', '请先登录账号才能使用此功能！');
+                return false;
+            }
+            return true;
+        }
+        
+        // 显示通知
+        function showNotification(title, message) {
+            document.getElementById('notification-title').textContent = title;
+            document.getElementById('notification-message').textContent = message;
+            document.getElementById('notification-modal').style.display = 'flex';
+        }
+        
+        // 切换页面
+        function switchToPage(pageId) {
+            if (!checkLogin()) return;
+            
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.getElementById('feature-selection-page').classList.remove('active');
+            
+            document.getElementById(pageId).classList.add('active');
+        }
+        
+        // 标记用户在线
+        async function markUserOnline() {
+            if (!currentAccount) return;
+            
+            const onlineData = {
+                username: currentAccount,
+                userId: currentUserId,
+                lastActivityTime: new Date().getTime()
+            };
+            
+            await onlineUsersRef.child(currentAccount).set(onlineData);
+            
+            // 定期更新在线状态
+            setInterval(async () => {
+                if (currentAccount) {
+                    await onlineUsersRef.child(currentAccount).update({
+                        lastActivityTime: new Date().getTime()
+                    });
+                }
+            }, 30000);
+            
+            onlineUsersRef.on('value', updateOnlineCount);
+        }
+        
+        // 更新在线人数
+        function updateOnlineCount(snapshot) {
+            const onlineUsers = snapshot.val() || {};
+            const now = new Date().getTime();
+            let onlineCount = 0;
+            
+            Object.values(onlineUsers).forEach(user => {
+                if (now - user.lastActivityTime < 5 * 60 * 1000) {
+                    onlineCount++;
+                }
+            });
+            
+            document.getElementById('online-count').textContent = onlineCount;
+        }
+        
+        // 更新个人资料UI
+        function updateProfileUI() {
+            if (!currentAccount) return;
+            
+            document.getElementById('profile-username').textContent = currentAccount;
+            document.getElementById('profile-id').textContent = currentUserId;
+            document.getElementById('profile-avatar-img').src = currentAvatar;
+            
+            usersRef.child(currentAccount).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    if (userData.registerTime) {
+                        const date = new Date(userData.registerTime);
+                        document.getElementById('profile-register-time').textContent = 
+                            date.toLocaleString('zh-CN');
+                    }
+                    
+                    if (userData.lastLoginTime) {
+                        const date = new Date(userData.lastLoginTime);
+                        document.getElementById('profile-last-login').textContent = 
+                            date.toLocaleString('zh-CN');
+                    }
+                }
+            });
+        }
+        
+        // 加载公共聊天
+        function loadPublicChat() {
+            if (!currentAccount) return;
+            
+            // 清空现有消息
+            document.getElementById('public-chat-box').innerHTML = '';
+            
+            publicMessagesRef.on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                displayPublicMessage(message, snapshot.key);
+            });
+        }
+        
+        // 显示公共消息 - 修复用户名显示问题
+        function displayPublicMessage(message, messageId) {
+            const isSelf = message.username === currentAccount;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `cyber-message ${isSelf ? 'right' : 'left'}`;
+            messageDiv.dataset.messageId = messageId;
+            messageDiv.dataset.timestamp = message.timestamp;
+            
+            // 检查消息是否已撤回
+            if (message.withdrawn) {
+                messageDiv.classList.add('message-withdrawn');
+            }
+            
+            const time = new Date(message.timestamp).toLocaleTimeString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            let content = message.content;
+            if (message.type === 'image') {
+                content = `<img src="${message.content}" class="message-img" alt="图片" style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 5px;">`;
+            } else if (message.type === 'video') {
+                content = `
+                    <video src="${message.content}" class="message-video" controls 
+                           style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 5px; background: #000;">
+                    </video>
+                `;
+            }
+            
+            // 添加头像点击事件
+            const avatarClickHandler = `showUserProfile('${message.username}')`;
+            
+            messageDiv.innerHTML = `
+                <img src="${message.avatar || DEFAULT_AVATAR}" class="cyber-avatar" alt="头像" onclick="${avatarClickHandler}">
+                <div class="message-bubble">
+                    <div class="username-display" title="${message.username}">
+                        ${message.username}
+                    </div>
+                    <div>${message.withdrawn ? '消息已撤回' : content}</div>
+                    <div class="message-status">
+                        ${time}
+                        ${isSelf && message.withdrawn ? '<span class="withdrawn-notice">已撤回</span>' : ''}
+                    </div>
+                </div>
+            `;
+            
+            const chatBox = document.getElementById('public-chat-box');
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // 发送公共消息
+        async function sendPublicMessage() {
+            if (!currentAccount) return;
+            
+            const input = document.getElementById('public-message-input');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            
+            const message = {
+                username: currentAccount,
+                userId: currentUserId,
+                avatar: currentAvatar,
+                content: content,
+                timestamp: new Date().getTime(),
+                type: 'text',
+                withdrawn: false
+            };
+            
+            try {
+                await publicMessagesRef.push(message);
+                input.value = '';
+            } catch (error) {
+                showNotification('发送失败', '消息发送失败，请重试！');
+            }
+        }
+        
+        // 加载好友列表
+        function loadFriendList() {
+            if (!currentAccount) return;
+            
+            friendsRef.child(currentAccount).on('value', (snapshot) => {
+                const friends = snapshot.val() || {};
+                const friendList = document.getElementById('friend-list');
+                friendList.innerHTML = '';
+                
+                if (Object.keys(friends).length === 0) {
+                    friendList.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">暂无好友</div>';
+                    return;
+                }
+                
+                Object.entries(friends).forEach(([friendId, friendData]) => {
+                    const friendItem = document.createElement('div');
+                    friendItem.className = 'cyber-friend-item';
+                    friendItem.dataset.account = friendData.account;
+                    
+                    friendItem.innerHTML = `
+                        <div style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--neon-cyan); overflow: hidden; cursor: pointer;" onclick="showUserProfile('${friendData.account}')">
+                            <img src="${friendData.avatar || DEFAULT_AVATAR}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 600; color: var(--neon-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${friendData.username}">
+                                ${friendData.username}
+                            </div>
+                            <div style="font-size: 12px; color: #888;">ID: ${friendData.userId}</div>
+                            <div style="font-size: 11px; color: #aaa; margin-top: 2px;">
+                                <span class="read-status" id="read-status-${friendData.account}">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <button class="start-chat-btn" style="padding: 5px 12px; background: var(--neon-cyan); color: var(--deep-space); border: none; border-radius: 5px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 12px;">聊天</button>
+                    `;
+                    
+                    friendList.appendChild(friendItem);
+                    
+                    friendItem.querySelector('.start-chat-btn').addEventListener('click', () => {
+                        startPrivateChat(friendData.account, friendData.username, friendData.userId);
+                    });
+                    
+                    // 检查未读消息
+                    checkUnreadMessages(friendData.account);
+                });
+            });
+        }
+        
+        // 检查未读消息
+        function checkUnreadMessages(friendAccount) {
+            if (!currentAccount) return;
+            
+            readReceiptsRef.child(currentAccount).child(friendAccount).on('value', (snapshot) => {
+                const lastReadTime = snapshot.val() || 0;
+                
+                // 检查是否有比lastReadTime更新的消息
+                privateMessagesRef.orderByChild('timestamp').startAt(lastReadTime + 1).on('value', (messagesSnapshot) => {
+                    const messages = messagesSnapshot.val() || {};
+                    let hasUnread = false;
+                    
+                    Object.values(messages).forEach(message => {
+                        if (message.from === friendAccount && message.to === currentAccount) {
+                            hasUnread = true;
+                        }
+                    });
+                    
+                    const statusElement = document.getElementById(`read-status-${friendAccount}`);
+                    if (statusElement) {
+                        if (hasUnread) {
+                            statusElement.innerHTML = '<i class="fas fa-circle" style="color: var(--neon-green); font-size: 8px;"></i> 未读';
+                            statusElement.style.color = 'var(--neon-green)';
+                        } else {
+                            statusElement.innerHTML = '<i class="fas fa-check"></i> 已读';
+                            statusElement.style.color = '#888';
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 开始私聊 - 修复标题显示
+        function startPrivateChat(friendAccount, friendName, friendId) {
+            if (!currentAccount) return;
+            
+            currentPrivateChatFriend = friendAccount;
+            currentPrivateChatFriendId = friendId;
+            
+            // 设置标题为完整的朋友名
+            const titleElement = document.getElementById('private-chat-title');
+            const fullTitle = `与 ${friendName} 的私聊`;
+            titleElement.textContent = fullTitle;
+            titleElement.title = fullTitle; // 添加工具提示
+            
+            // 如果标题过长，添加滚动效果
+            if (fullTitle.length > 25) {
+                titleElement.classList.add('scrolling-title');
+            } else {
+                titleElement.classList.remove('scrolling-title');
+            }
+            
+            document.getElementById('private-message-input').disabled = false;
+            document.getElementById('private-send-btn').disabled = false;
+            document.getElementById('private-emoji-btn').disabled = false;
+            document.getElementById('private-img-input').disabled = false;
+            document.getElementById('private-video-input').disabled = false;
+            document.getElementById('mobile-private-tools-btn').disabled = false;
+            
+            const imgLabel = document.querySelector('label[for="private-img-input"]');
+            const videoLabel = document.querySelector('label[for="private-video-input"]');
+            if (imgLabel) {
+                imgLabel.disabled = false;
+                imgLabel.style.pointerEvents = 'auto';
+                imgLabel.style.opacity = '1';
+            }
+            if (videoLabel) {
+                videoLabel.disabled = false;
+                videoLabel.style.pointerEvents = 'auto';
+                videoLabel.style.opacity = '1';
+            }
+            
+            // 启用移动端工具菜单中的项目
+            document.querySelectorAll('#private-mobile-tools-menu .mobile-tool-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            });
+            
+            switchToPage('private-chat-page');
+            loadPrivateChat();
+            
+            // 标记为已读
+            markMessagesAsRead(friendAccount);
+        }
+        
+        // 标记消息为已读
+        async function markMessagesAsRead(friendAccount) {
+            if (!currentAccount) return;
+            
+            try {
+                await readReceiptsRef.child(currentAccount).child(friendAccount).set(new Date().getTime());
+            } catch (error) {
+                console.error('标记已读失败:', error);
+            }
+        }
+        
+        // 加载私聊
+        function loadPrivateChat() {
+            if (!currentAccount || !currentPrivateChatFriend) return;
+            
+            const chatBox = document.getElementById('private-chat-box');
+            chatBox.innerHTML = '';
+            
+            privateMessagesRef.on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                
+                if ((message.from === currentAccount && message.to === currentPrivateChatFriend) ||
+                    (message.from === currentPrivateChatFriend && message.to === currentAccount)) {
+                    displayPrivateMessage(message, snapshot.key);
+                }
+            });
+            
+            // 标记为已读
+            markMessagesAsRead(currentPrivateChatFriend);
+        }
+        
+        // 显示私聊消息 - 修复用户名显示问题
+        function displayPrivateMessage(message, messageId) {
+            const isSelf = message.from === currentAccount;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `cyber-message ${isSelf ? 'right' : 'left'}`;
+            messageDiv.dataset.messageId = messageId;
+            messageDiv.dataset.timestamp = message.timestamp;
+            
+            // 检查消息是否已撤回
+            if (message.withdrawn) {
+                messageDiv.classList.add('message-withdrawn');
+            }
+            
+            const time = new Date(message.timestamp).toLocaleTimeString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            let content = message.content;
+            if (message.type === 'image') {
+                content = `<img src="${message.content}" class="message-img" alt="图片" style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 5px;">`;
+            } else if (message.type === 'video') {
+                content = `
+                    <video src="${message.content}" class="message-video" controls 
+                           style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-top: 5px; background: #000;">
+                    </video>
+                `;
+            }
+            
+            // 添加头像点击事件
+            const avatarAccount = isSelf ? currentAccount : currentPrivateChatFriend;
+            const avatarClickHandler = `showUserProfile('${avatarAccount}')`;
+            
+            let readStatus = '';
+            if (isSelf) {
+                // 检查对方是否已读
+                readReceiptsRef.child(currentPrivateChatFriend).child(currentAccount).once('value', (snapshot) => {
+                    const lastReadTime = snapshot.val() || 0;
+                    const isRead = message.timestamp <= lastReadTime;
+                    
+                    const statusElement = messageDiv.querySelector('.read-status');
+                    if (statusElement) {
+                        if (isRead) {
+                            statusElement.innerHTML = '<i class="fas fa-check-double"></i> 已读';
+                            statusElement.classList.add('read');
+                        } else {
+                            statusElement.innerHTML = '<i class="fas fa-check"></i> 未读';
+                        }
+                    }
+                });
+                
+                readStatus = '<div class="message-status"><span class="read-status"><i class="fas fa-check"></i> 未读</span></div>';
+            }
+            
+            messageDiv.innerHTML = `
+                <img src="${message.avatar || DEFAULT_AVATAR}" class="cyber-avatar" alt="头像" onclick="${avatarClickHandler}">
+                <div class="message-bubble">
+                    <div>${message.withdrawn ? '消息已撤回' : content}</div>
+                    <div class="message-status">
+                        ${time}
+                        ${message.withdrawn ? '<span class="withdrawn-notice">已撤回</span>' : ''}
+                    </div>
+                    ${readStatus}
+                </div>
+            `;
+            
+            const chatBox = document.getElementById('private-chat-box');
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // 发送私聊消息
+        async function sendPrivateMessage() {
+            if (!currentAccount || !currentPrivateChatFriend) return;
+            
+            const input = document.getElementById('private-message-input');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            
+            const message = {
+                from: currentAccount,
+                to: currentPrivateChatFriend,
+                avatar: currentAvatar,
+                content: content,
+                timestamp: new Date().getTime(),
+                type: 'text',
+                withdrawn: false
+            };
+            
+            try {
+                await privateMessagesRef.push(message);
+                input.value = '';
+            } catch (error) {
+                showNotification('发送失败', '消息发送失败，请重试！');
+            }
+        }
+        
+        // 加载群组列表
+        function loadGroupList() {
+            if (!currentAccount) return;
+            
+            groupMembersRef.child(currentAccount).on('value', (snapshot) => {
+                const groups = snapshot.val() || {};
+                const groupList = document.getElementById('group-list');
+                groupList.innerHTML = '';
+                
+                if (Object.keys(groups).length === 0) {
+                    groupList.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">暂无群聊，点击上方按钮创建</div>';
+                    return;
+                }
+                
+                Object.entries(groups).forEach(([groupId, groupData]) => {
+                    groupsRef.child(groupId).once('value', (groupSnapshot) => {
+                        const groupInfo = groupSnapshot.val();
+                        if (!groupInfo) return;
+                        
+                        const groupItem = document.createElement('div');
+                        groupItem.className = 'cyber-group-item';
+                        groupItem.dataset.groupId = groupId;
+                        
+                        groupItem.innerHTML = `
+                            <div style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--neon-pink); overflow: hidden;">
+                                <div style="width: 100%; height: 100%; background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink)); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                                    👥
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-weight: 600; color: var(--neon-pink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${groupInfo.name || '未命名群聊'}">
+                                    ${groupInfo.name || '未命名群聊'}
+                                </div>
+                                <div style="font-size: 12px; color: #888;">${groupInfo.description || '暂无描述'}</div>
+                                <div style="font-size: 11px; color: #aaa;">成员: ${groupInfo.memberCount || 1}</div>
+                            </div>
+                            <button class="enter-group-btn" style="padding: 5px 12px; background: var(--neon-pink); color: var(--deep-space); border: none; border-radius: 5px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 12px;">进入</button>
+                        `;
+                        
+                        groupList.appendChild(groupItem);
+                        
+                        groupItem.querySelector('.enter-group-btn').addEventListener('click', () => {
+                            enterGroupChat(groupId, groupInfo.name);
+                        });
+                    });
+                });
+            });
+        }
+        
+        // 加载好友选择列表（用于创建群聊）
+        function loadFriendsForGroupSelection() {
+            if (!currentAccount) return;
+            
+            friendsRef.child(currentAccount).once('value', (snapshot) => {
+                const friends = snapshot.val() || {};
+                const friendSelectList = document.getElementById('friend-select-list');
+                friendSelectList.innerHTML = '';
+                
+                if (Object.keys(friends).length === 0) {
+                    friendSelectList.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">暂无好友</div>';
+                    return;
+                }
+                
+                Object.entries(friends).forEach(([friendId, friendData]) => {
+                    const friendItem = document.createElement('div');
+                    friendItem.className = 'friend-select-item';
+                    friendItem.dataset.account = friendData.account;
+                    
+                    friendItem.innerHTML = `
+                        <input type="checkbox" id="friend-${friendData.account}" style="margin-right: 5px;">
+                        <div style="width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--neon-cyan); overflow: hidden;">
+                            <img src="${friendData.avatar || DEFAULT_AVATAR}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 600; color: var(--starlight); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${friendData.username}">
+                                ${friendData.username}
+                            </div>
+                        </div>
+                    `;
+                    
+                    friendSelectList.appendChild(friendItem);
+                    
+                    friendItem.addEventListener('click', (e) => {
+                        if (e.target.type !== 'checkbox') {
+                            const checkbox = friendItem.querySelector('input[type="checkbox"]');
+                            checkbox.checked = !checkbox.checked;
+                            friendItem.classList.toggle('selected', checkbox.checked);
+                        }
+                    });
+                });
+            });
+        }
+        
+        // 创建群聊
+        async function createGroup() {
+            const groupName = document.getElementById('group-name-input').value.trim();
+            const groupDesc = document.getElementById('group-desc-input').value.trim();
+            
+            if (!groupName) {
+                showNotification('输入错误', '请输入群聊名称！');
+                return;
+            }
+            
+            const selectedFriends = [];
+            document.querySelectorAll('.friend-select-item input[type="checkbox"]:checked').forEach(checkbox => {
+                const account = checkbox.id.replace('friend-', '');
+                selectedFriends.push(account);
+            });
+            
+            if (selectedFriends.length === 0) {
+                showNotification('输入错误', '请至少选择一位好友！');
+                return;
+            }
+            
+            try {
+                const groupId = 'GROUP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                // 创建群聊
+                await groupsRef.child(groupId).set({
+                    id: groupId,
+                    name: groupName,
+                    description: groupDesc,
+                    creator: currentAccount,
+                    createdAt: new Date().getTime(),
+                    memberCount: selectedFriends.length + 1 // 包括自己
+                });
+                
+                // 添加成员
+                const members = [currentAccount, ...selectedFriends];
+                
+                for (const member of members) {
+                    await groupMembersRef.child(member).child(groupId).set({
+                        groupId: groupId,
+                        joinedAt: new Date().getTime()
+                    });
+                }
+                
+                // 创建群聊第一条消息
+                await groupMessagesRef.child(groupId).push().set({
+                    type: 'system',
+                    content: `群聊 "${groupName}" 已创建`,
+                    timestamp: new Date().getTime(),
+                    sender: '系统'
+                });
+                
+                showNotification('创建成功', '群聊创建成功！');
+                document.getElementById('create-group-modal').style.display = 'none';
+                loadGroupList();
+                
+            } catch (error) {
+                showNotification('创建失败', '群聊创建失败，请重试！');
+                console.error('创建群聊错误:', error);
+            }
+        }
+        
+        // 进入群聊
+        function enterGroupChat(groupId, groupName) {
+            currentGroupChat = groupId;
+            // 这里可以扩展群聊功能
+            showNotification('提示', '群聊功能正在开发中...');
+        }
+        
+        // 搜索好友
+        async function searchFriend() {
+            const friendId = document.getElementById('friend-id-input').value.trim();
+            
+            if (!friendId || friendId.length !== 6) {
+                showNotification('输入错误', '请输入有效的6位好友ID！');
+                return;
+            }
+            
+            try {
+                const snapshot = await usersRef.orderByChild('userId').equalTo(friendId).once('value');
+                
+                if (!snapshot.exists()) {
+                    showNotification('搜索失败', '未找到该ID对应的用户！');
+                    return;
+                }
+                
+                const users = snapshot.val();
+                const [userId, userData] = Object.entries(users)[0];
+                
+                if (userData.userId === currentUserId) {
+                    showNotification('搜索失败', '不能添加自己为好友！');
+                    return;
+                }
+                
+                // 检查是否已经是好友
+                const friendSnapshot = await friendsRef.child(currentAccount).child(userId).once('value');
+                if (friendSnapshot.exists()) {
+                    showNotification('搜索失败', '该用户已经是您的好友！');
+                    return;
+                }
+                
+                const searchResult = document.getElementById('search-result');
+                searchResult.innerHTML = `
+                    <div class="cyber-friend-item">
+                        <div style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--neon-cyan); overflow: hidden; cursor: pointer;" onclick="showUserProfile('${userId}')">
+                            <img src="${userData.avatar || DEFAULT_AVATAR}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--neon-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${userData.username}">
+                                ${userData.username}
+                            </div>
+                            <div style="font-size: 12px; color: #888;">ID: ${userData.userId}</div>
+                        </div>
+                        <button id="add-friend-btn" style="padding: 5px 12px; background: var(--neon-cyan); color: var(--deep-space); border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 12px;">添加</button>
+                    </div>
+                `;
+                
+                document.getElementById('add-friend-btn').addEventListener('click', () => {
+                    sendFriendRequest(userId, userData.username);
+                });
+                
+            } catch (error) {
+                showNotification('搜索失败', '网络错误，请稍后重试！');
+            }
+        }
+        
+        // 发送好友请求
+        async function sendFriendRequest(friendId, friendName) {
+            if (!currentAccount) return;
+            
+            try {
+                const requestSnapshot = await friendRequestsRef
+                    .child(friendId)
+                    .child(currentAccount)
+                    .once('value');
+                
+                if (requestSnapshot.exists()) {
+                    showNotification('发送失败', '已经向该用户发送过好友请求！');
+                    return;
+                }
+                
+                await friendRequestsRef.child(friendId).child(currentAccount).set({
+                    from: currentAccount,
+                    fromId: currentUserId,
+                    fromName: currentAccount,
+                    timestamp: new Date().getTime(),
+                    status: 'pending'
+                });
+                
+                showNotification('发送成功', `已向 ${friendName} 发送好友请求！`);
+                
+            } catch (error) {
+                showNotification('发送失败', '网络错误，请稍后重试！');
+            }
+        }
+        
+        // 加载好友请求
+        function loadFriendRequests() {
+            if (!currentAccount) return;
+            
+            friendRequestsRef.child(currentAccount).on('value', (snapshot) => {
+                const requests = snapshot.val() || {};
+                const requestsList = document.getElementById('friend-requests-list');
+                requestsList.innerHTML = '';
+                
+                if (Object.keys(requests).length === 0) {
+                    requestsList.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">暂无好友申请</div>';
+                    return;
+                }
+                
+                Object.entries(requests).forEach(([fromAccount, requestData]) => {
+                    if (requestData.status !== 'pending') return;
+                    
+                    usersRef.child(fromAccount).once('value', (userSnapshot) => {
+                        const userData = userSnapshot.val();
+                        if (!userData) return;
+                        
+                        const requestItem = document.createElement('div');
+                        requestItem.className = 'friend-request-item';
+                        requestItem.dataset.from = fromAccount;
+                        
+                        requestItem.innerHTML = `
+                            <div style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--neon-cyan); overflow: hidden; cursor: pointer;" onclick="showUserProfile('${fromAccount}')">
+                                <img src="${userData.avatar || DEFAULT_AVATAR}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-weight: 600; color: var(--neon-cyan); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${userData.username}">
+                                    ${userData.username}
+                                </div>
+                                <div style="font-size: 12px; color: #888;">ID: ${userData.userId}</div>
+                                <div style="font-size: 11px; color: #aaa; margin-top: 2px;">请求添加您为好友</div>
+                            </div>
+                            <div class="request-actions">
+                                <button class="accept-btn" data-from="${fromAccount}">同意</button>
+                                <button class="reject-btn" data-from="${fromAccount}">拒绝</button>
+                            </div>
+                        `;
+                        
+                        requestsList.appendChild(requestItem);
+                        
+                        requestItem.querySelector('.accept-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            handleFriendRequest(fromAccount, true);
+                        });
+                        
+                        requestItem.querySelector('.reject-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            handleFriendRequest(fromAccount, false);
+                        });
+                    });
+                });
+            });
+        }
+        
+        // 处理好友请求
+        async function handleFriendRequest(fromAccount, accept) {
+            if (!currentAccount) return;
+            
+            try {
+                if (accept) {
+                    // 获取对方信息
+                    const fromUserSnapshot = await usersRef.child(fromAccount).once('value');
+                    const fromUserData = fromUserSnapshot.val();
+                    
+                    // 获取自己信息
+                    const mySnapshot = await usersRef.child(currentAccount).once('value');
+                    const myData = mySnapshot.val();
+                    
+                    // 添加为好友（双向）
+                    await friendsRef.child(currentAccount).child(fromAccount).set({
+                        account: fromAccount,
+                        userId: fromUserData.userId,
+                        username: fromUserData.username,
+                        avatar: fromUserData.avatar || DEFAULT_AVATAR,
+                        addedAt: new Date().getTime()
+                    });
+                    
+                    await friendsRef.child(fromAccount).child(currentAccount).set({
+                        account: currentAccount,
+                        userId: myData.userId,
+                        username: myData.username,
+                        avatar: myData.avatar || DEFAULT_AVATAR,
+                        addedAt: new Date().getTime()
+                    });
+                    
+                    // 更新好友请求状态
+                    await friendRequestsRef.child(currentAccount).child(fromAccount).update({
+                        status: 'accepted'
+                    });
+                    
+                    showNotification('添加成功', `已添加 ${fromUserData.username} 为好友！`);
+                } else {
+                    // 拒绝请求
+                    await friendRequestsRef.child(currentAccount).child(fromAccount).update({
+                        status: 'rejected'
+                    });
+                    
+                    showNotification('已拒绝', '已拒绝该好友请求');
+                }
+                
+            } catch (error) {
+                showNotification('处理失败', '操作失败，请重试！');
+                console.error('处理好友请求错误:', error);
+            }
+        }
+        
+        // 复制我的ID
+        function copyMyID() {
+            if (!currentUserId) {
+                showNotification('错误', '请先登录！');
+                return;
+            }
+            
+            navigator.clipboard.writeText(currentUserId).then(() => {
+                showNotification('复制成功', 'ID已复制到剪贴板！');
+            }).catch(err => {
+                showNotification('复制失败', '无法复制到剪贴板！');
+            });
+        }
+        
+        // 加载个人资料
+        function loadProfile() {
+            updateProfileUI();
+            
+            if (currentAccount) {
+                friendsRef.child(currentAccount).once('value', (snapshot) => {
+                    const friends = snapshot.val() || {};
+                    document.getElementById('profile-friends-count').textContent = Object.keys(friends).length;
+                });
+            }
+        }
+        
+        // 显示用户资料
+        async function showUserProfile(account) {
+            if (!account) return;
+            
+            try {
+                const snapshot = await usersRef.child(account).once('value');
+                if (!snapshot.exists()) {
+                    showNotification('错误', '用户不存在！');
+                    return;
+                }
+                
+                const userData = snapshot.val();
+                const profileInfo = document.getElementById('user-profile-info');
+                
+                profileInfo.innerHTML = `
+                    <div style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--neon-cyan); overflow: hidden; margin: 0 auto 15px;">
+                        <img src="${userData.avatar || DEFAULT_AVATAR}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <h3 style="color: var(--neon-cyan); margin-bottom: 8px; text-shadow: 0 0 8px var(--neon-cyan);" title="${userData.username}">${userData.username}</h3>
+                    <p style="color: var(--starlight); margin-bottom: 5px; font-size: 13px;">账号: ${account}</p>
+                    <p style="color: var(--starlight); margin-bottom: 5px; font-size: 13px;">ID: ${userData.userId}</p>
+                    <p style="color: var(--starlight); margin-bottom: 5px; font-size: 13px;">
+                        注册时间: ${new Date(userData.registerTime).toLocaleString('zh-CN')}
+                    </p>
+                    <p style="color: var(--starlight); margin-bottom: 15px; font-size: 13px;">
+                        最后登录: ${new Date(userData.lastLoginTime).toLocaleString('zh-CN')}
+                    </p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        ${account !== currentAccount ? `
+                            <button id="send-private-msg-btn" style="padding: 8px 15px; background: var(--neon-cyan); color: var(--deep-space); border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 12px;">发送消息</button>
+                        ` : ''}
+                    </div>
+                `;
+                
+                document.getElementById('user-profile-modal').style.display = 'flex';
+                
+                if (account !== currentAccount) {
+                    document.getElementById('send-private-msg-btn').addEventListener('click', () => {
+                        startPrivateChat(account, userData.username, userData.userId);
+                        document.getElementById('user-profile-modal').style.display = 'none';
+                    });
+                }
+                
+            } catch (error) {
+                showNotification('错误', '加载用户资料失败！');
+                console.error('加载用户资料错误:', error);
+            }
+        }
+        
+        // 处理图片上传
+        function handleImageUpload(e, type) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showNotification('错误', '请选择图片文件！');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('错误', '图片大小不能超过5MB！');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const imageUrl = event.target.result;
+                
+                if (type === 'public') {
+                    const message = {
+                        username: currentAccount,
+                        userId: currentUserId,
+                        avatar: currentAvatar,
+                        content: imageUrl,
+                        timestamp: new Date().getTime(),
+                        type: 'image',
+                        withdrawn: false
+                    };
+                    
+                    try {
+                        await publicMessagesRef.push(message);
+                    } catch (error) {
+                        showNotification('发送失败', '图片发送失败，请重试！');
+                    }
+                } else if (type === 'private' && currentPrivateChatFriend) {
+                    const message = {
+                        from: currentAccount,
+                        to: currentPrivateChatFriend,
+                        avatar: currentAvatar,
+                        content: imageUrl,
+                        timestamp: new Date().getTime(),
+                        type: 'image',
+                        withdrawn: false
+                    };
+                    
+                    try {
+                        await privateMessagesRef.push(message);
+                    } catch (error) {
+                        showNotification('发送失败', '图片发送失败，请重试！');
+                    }
+                }
+            };
+            
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+        
+        // 处理视频上传
+        function handleVideoUpload(e, type) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('video/')) {
+                showNotification('错误', '请选择视频文件！');
+                return;
+            }
+            
+            // 视频文件大小限制为50MB
+            if (file.size > 50 * 1024 * 1024) {
+                showNotification('错误', '视频大小不能超过50MB！');
+                return;
+            }
+            
+            // 显示上传中提示
+            const uploadingDiv = document.createElement('div');
+            uploadingDiv.className = 'video-uploading';
+            uploadingDiv.innerHTML = `
+                <div class="loading-spinner" style="display: inline-block; margin-right: 10px;"></div>
+                视频上传中...
+                <div class="upload-progress">
+                    <div class="upload-progress-bar"></div>
+                </div>
+            `;
+            
+            const chatBox = type === 'public' ? 
+                document.getElementById('public-chat-box') : 
+                document.getElementById('private-chat-box');
+            chatBox.appendChild(uploadingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const videoUrl = event.target.result;
+                
+                // 模拟上传进度
+                const progressBar = uploadingDiv.querySelector('.upload-progress-bar');
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    progressBar.style.width = `${progress}%`;
+                    if (progress >= 90) clearInterval(interval);
+                }, 100);
+                
+                try {
+                    if (type === 'public') {
+                        const message = {
+                            username: currentAccount,
+                            userId: currentUserId,
+                            avatar: currentAvatar,
+                            content: videoUrl,
+                            timestamp: new Date().getTime(),
+                            type: 'video',
+                            withdrawn: false
+                        };
+                        
+                        await publicMessagesRef.push(message);
+                    } else if (type === 'private' && currentPrivateChatFriend) {
+                        const message = {
+                            from: currentAccount,
+                            to: currentPrivateChatFriend,
+                            avatar: currentAvatar,
+                            content: videoUrl,
+                            timestamp: new Date().getTime(),
+                            type: 'video',
+                            withdrawn: false
+                        };
+                        
+                        await privateMessagesRef.push(message);
+                    }
+                    
+                    // 完成上传
+                    progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        uploadingDiv.remove();
+                    }, 500);
+                    
+                } catch (error) {
+                    uploadingDiv.innerHTML = '<div style="color: var(--danger-red);">视频上传失败</div>';
+                    setTimeout(() => {
+                        uploadingDiv.remove();
+                    }, 2000);
+                    showNotification('发送失败', '视频发送失败，请重试！');
+                }
+            };
+            
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+        
+        // 处理头像上传
+        function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showNotification('错误', '请选择图片文件！');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) {
+                showNotification('错误', '头像大小不能超过2MB！');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const avatarUrl = event.target.result;
+                
+                currentAvatar = avatarUrl;
+                document.getElementById('welcome-avatar').src = avatarUrl;
+                document.getElementById('profile-avatar-img').src = avatarUrl;
+                
+                if (currentAccount) {
+                    try {
+                        await usersRef.child(currentAccount).update({ avatar: avatarUrl });
+                        showNotification('成功', '头像更新成功！');
+                    } catch (error) {
+                        showNotification('错误', '头像更新失败，请重试！');
+                    }
+                }
+            };
+            
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+        
+        // 消息触摸事件处理
+        function handleMessageTouchStart(e) {
+            const messageElement = e.target.closest('.cyber-message');
+            if (!messageElement) return;
+            
+            messageLongPressTimer = setTimeout(() => {
+                showMessageContextMenu(messageElement, e.touches[0]);
+            }, 800); // 长按800毫秒
+        }
+        
+        function handleMessageTouchEnd() {
+            clearTimeout(messageLongPressTimer);
+        }
+        
+        function handleMessageTouchMove() {
+            clearTimeout(messageLongPressTimer);
+        }
+        
+        // 显示消息上下文菜单
+        function showMessageContextMenu(messageElement, touch) {
+            const messageId = messageElement.dataset.messageId;
+            const messageTimestamp = parseInt(messageElement.dataset.timestamp);
+            const now = new Date().getTime();
+            const threeMinutes = 3 * 60 * 1000;
+            
+            // 检查是否是自己发送的消息且在三分钟内
+            const isSelf = messageElement.classList.contains('right');
+            const canWithdraw = isSelf && (now - messageTimestamp <= threeMinutes);
+            
+            // 设置选中的消息
+            selectedMessageId = messageId;
+            
+            // 确定消息类型
+            if (document.getElementById('public-chat-page').classList.contains('active')) {
+                selectedMessageType = 'public';
+            } else if (document.getElementById('private-chat-page').classList.contains('active')) {
+                selectedMessageType = 'private';
+            }
+            
+            const menu = document.getElementById('message-context-menu');
+            const withdrawBtn = document.getElementById('withdraw-message-btn');
+            
+            // 设置撤回按钮状态
+            if (canWithdraw) {
+                withdrawBtn.style.display = 'block';
+                withdrawBtn.disabled = false;
+            } else {
+                withdrawBtn.style.display = 'none';
+            }
+            
+            // 定位菜单
+            menu.style.display = 'flex';
+            menu.style.left = Math.min(touch.clientX, window.innerWidth - 130) + 'px';
+            menu.style.top = Math.min(touch.clientY, window.innerHeight - 120) + 'px';
+        }
+        
+        // 撤回消息
+        async function withdrawMessage() {
+            if (!selectedMessageId || !selectedMessageType) return;
+            
+            try {
+                let messageRef;
+                if (selectedMessageType === 'public') {
+                    messageRef = publicMessagesRef.child(selectedMessageId);
+                } else if (selectedMessageType === 'private') {
+                    messageRef = privateMessagesRef.child(selectedMessageId);
+                }
+                
+                if (messageRef) {
+                    await messageRef.update({
+                        withdrawn: true,
+                        withdrawnAt: new Date().getTime()
+                    });
+                    
+                    showNotification('撤回成功', '消息已撤回');
+                    document.getElementById('message-context-menu').style.display = 'none';
+                }
+            } catch (error) {
+                showNotification('撤回失败', '消息撤回失败！');
+                console.error('撤回消息错误:', error);
+            }
+        }
+        
+        // 复制消息
+        function copyMessage() {
+            const messageElement = document.querySelector(`[data-message-id="${selectedMessageId}"]`);
+            if (!messageElement) return;
+            
+            const messageContent = messageElement.querySelector('.message-bubble').textContent.trim();
+            
+            navigator.clipboard.writeText(messageContent).then(() => {
+                showNotification('复制成功', '消息已复制到剪贴板');
+                document.getElementById('message-context-menu').style.display = 'none';
+            }).catch(err => {
+                showNotification('复制失败', '复制失败，请重试');
+            });
+        }
+        
+        // 删除消息（仅本地）
+        function deleteMessage() {
+            const messageElement = document.querySelector(`[data-message-id="${selectedMessageId}"]`);
+            if (messageElement) {
+                messageElement.remove();
+                showNotification('删除成功', '消息已从本地删除');
+            }
+            document.getElementById('message-context-menu').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
